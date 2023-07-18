@@ -1,12 +1,14 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc'
 import { AuthContext } from '../Providers/AuthProviders';
 import Loader from '../Pages/Shared/Loader';
 import Swal from 'sweetalert2'
+import axios from 'axios'
 
 const SignUp = () => {
-    const { user, setUser, loading, setLoading, createUser, googleSignInUser } = useContext(AuthContext)
+    const [error, setError] = useState('')
+    const { user, setUser, loading, setLoading, createUser, googleSignInUser } = useContext(AuthContext);
 
     const handleSubmit = event => {
         event.preventDefault();
@@ -16,16 +18,23 @@ const SignUp = () => {
         const password = form.password.value;
         const confirmPassword = form.confirmPassword.value;
 
+        const userData = {username,email, role : 'student'}
+
         if (password !== confirmPassword) {
             alert('Passwords did not match');
             return;
-        }
-
+        } else if (password < 6){
+            setError('Password must be at least 6 characters')
+        } 
         createUser(email, password)
             .then(result => {
                 const user = result.user
-                setUser(user)
-                setLoading(false)
+                axios.post(`${import.meta.env.VITE_BASE_URL}/all-users`, userData)
+                .then(result => {
+                    console.log(result.data);
+                    setUser(user)
+                    setLoading(false)
+                })
             })
             .catch(error =>{
                 const errorMessage = error.message;
@@ -34,12 +43,11 @@ const SignUp = () => {
                         icon: 'error',
                         text: 'This email is already in use. Please Login',
                       })
+                      setError(errorMessage)
                 }
                 console.log(errorMessage)
                 setLoading(false)
             })
-        // console.log(username,email,password);
-
     }
     return (
         <>
@@ -66,6 +74,7 @@ const SignUp = () => {
                             <label className="label font-semibold">Confirm Password</label>
                             <input name='confirmPassword' type="password" placeholder="Confirm Password" className="input input-bordered focus:outline-none" required />
                         </div>
+                        <p className='text-red-600'>{error}</p>
                         <p className='text-xs font-semibold my-3'>Already have an account? Please <Link className='underline text-sky-700' to='/log-in'>Login</Link></p>
                         <div className="form-control">
                             <button type='submit' className="btn btn-primary font-bold">Sign Up</button>
