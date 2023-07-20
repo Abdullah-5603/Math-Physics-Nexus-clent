@@ -61,14 +61,14 @@ const Login = () => {
                 const userData = { username: user.displayName, email: user.email, image: user.photoURL, role: 'student' }
                 axios.post(`${import.meta.env.VITE_BASE_URL}/all-users`, userData)
                     .then(result => {
-                        console.log(result.data);
+                        // console.log(result.data);
                         setUser(user)
                         Swal.fire({
                             icon: 'success',
                             text: 'Login Successfully',
                         })
-                        setLoading(false)
                         navigate(from, { replace: true });
+                        setLoading(false)
                     })
                 // console.log(user);
             })
