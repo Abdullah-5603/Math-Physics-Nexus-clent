@@ -8,7 +8,7 @@ import axios from 'axios'
 
 const SignUp = () => {
     const [error, setError] = useState('')
-    const { user, setUser, loading, setLoading, createUser, googleSignInUser } = useContext(AuthContext);
+    const {setUser, loading, setLoading, createUser, googleSignInUser } = useContext(AuthContext);
 
     const handleSubmit = event => {
         event.preventDefault();
@@ -18,32 +18,65 @@ const SignUp = () => {
         const password = form.password.value;
         const confirmPassword = form.confirmPassword.value;
 
-        const userData = {username,email, role : 'student'}
 
         if (password !== confirmPassword) {
             alert('Passwords did not match');
             return;
-        } else if (password < 6){
+        } else if (password < 6) {
             setError('Password must be at least 6 characters')
-        } 
+            return;
+        }
+
+        const userData = { username, email, password, role: 'student' }
+
         createUser(email, password)
             .then(result => {
                 const user = result.user
                 axios.post(`${import.meta.env.VITE_BASE_URL}/all-users`, userData)
-                .then(result => {
-                    console.log(result.data);
-                    setUser(user)
-                    setLoading(false)
-                })
+                    .then(result => {
+                        console.log(result.data);
+                        setUser(user)
+                        setLoading(false)
+                    })
             })
-            .catch(error =>{
+            .catch(error => {
                 const errorMessage = error.message;
                 if (errorMessage == 'Firebase: Error (auth/email-already-in-use).') {
                     Swal.fire({
                         icon: 'error',
                         text: 'This email is already in use. Please Login',
-                      })
-                      setError(errorMessage)
+                    })
+                    setError('This email is already in use. Please Login')
+                } else if (errorMessage === 'Firebase: Error (auth/invalid-email).') {
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Please input a valid email address',
+                    })
+                    setError('Please input a valid email address');
+                    setLoading(false)
+                console.log(errorMessage)
+                setLoading(false)
+            }
+            })
+    }
+
+    const handleGoogleSignIn = () => {
+        googleSignInUser()
+            .then(result => {
+                const user = result.user
+                const userData = { username: user.displayName, email: user.email, image: user.photoURL, role: 'student' }
+                axios.post(`${import.meta.env.VITE_BASE_URL}/all-users`, userData)
+                    .then(result => {
+                        console.log(result.data);
+                        setUser(user)
+                        setLoading(false)
+                    })
+                    console.log(result);
+            })
+            .catch(error => {
+                const errorMessage = error.message;
+                if(errorMessage == 'Firebase: Error (auth/popup-closed-by-user).'){
+                    setLoading(false)
                 }
                 console.log(errorMessage)
                 setLoading(false)
@@ -80,7 +113,7 @@ const SignUp = () => {
                             <button type='submit' className="btn btn-primary font-bold">Sign Up</button>
                         </div>
                         <div className='divider text-black'>Or</div>
-                        <div className='text-black cursor-pointer flex items-center justify-between w-full py-3 px-3 md:px-10 mx-auto border-2 md:mt-3 border-gray-500 rounded-full'><FcGoogle className='w-7 h-7' /> <p className='font-bold md:text-xl text-center'>Sign in with Google</p></div>
+                        <div onClick={handleGoogleSignIn} className='text-black cursor-pointer flex items-center justify-between w-full py-3 px-3 md:px-10 mx-auto border-2 md:mt-3 border-gray-500 rounded-full'><FcGoogle className='w-7 h-7' /> <p className='font-bold md:text-xl text-center'>Sign in with Google</p></div>
                     </div>
                 </form>
             </div>

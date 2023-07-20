@@ -5,6 +5,7 @@ import MyPapers from "../Pages/Mypapers/MyPapers";
 import UploadPapers from "../Pages/UploadPapers/UploadPapers";
 import Login from "../Pages/Login/login";
 import SignUp from "../SignUp/SignUp";
+import ResetPassword from "../Pages/ResetPassword/ResetPassword";
 
 const router = createBrowserRouter([
     {
@@ -24,12 +25,16 @@ const router = createBrowserRouter([
                 element : <UploadPapers/>
             },
             {
-                path : '/login',
+                path : '/log-in',
                 element : <Login/>
             },
             {
                 path : '/sign-up',
                 element: <SignUp/>
+            },
+            {
+                path : '/reset-password',
+                element: <ResetPassword/>
             }
         ]
     }
