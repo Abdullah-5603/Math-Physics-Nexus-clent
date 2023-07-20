@@ -12,6 +12,7 @@ const UploadPapers = () => {
         event.preventDefault();
         const form = event.target;
         const email = form.email.value;
+        const name = form.name.value;
         const examName = form.examName.value.toLowerCase();
         const image = form.photo.files[0]; // Get the selected file from the file input
 
@@ -37,7 +38,7 @@ const UploadPapers = () => {
                     })
                 }
                 const image = data.data.url;
-                const paper = { email, image, examName, date: new Date() }
+                const paper = {name, email, image, examName, date: new Date() }
                 axios.post(`${import.meta.env.VITE_BASE_URL}/all-papers`, paper)
                     .then(response => console.log(response))
                 // Handle the response from the server
@@ -47,8 +48,6 @@ const UploadPapers = () => {
                 // Handle any errors that occur during the upload
                 console.error('Error uploading image:', error);
             });
-
-
     };
 
 
@@ -62,8 +61,12 @@ const UploadPapers = () => {
                     <p className='text-xl font-bold md:pt-5 pt-3 mx-auto md:text-3xl'>Upload Paper</p>
                     <div className="card-body">
                         <div className="form-control">
-                            <label className="label font-semibold">Email</label>
-                            <input name='email' type="text" placeholder="Email" className="input input-bordered focus:outline-none" required />
+                            <label className="label font-semibold">Student Email</label>
+                            <input name='email' type="text" placeholder="Student Email" className="input input-bordered focus:outline-none" required />
+                        </div>
+                        <div className="form-control">
+                            <label className="label font-semibold">Student Name</label>
+                            <input name='name' type="text" placeholder="Student Name" className="input input-bordered focus:outline-none" required />
                         </div>
                         <div className="form-control">
                             <label className="label font-semibold">Exam Name</label>

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc'
 import { AuthContext } from '../../Providers/AuthProviders';
 import Loader from '../Shared/Loader';
@@ -7,13 +7,28 @@ import axios from 'axios';
 
 const Login = () => {
     const [error, setError] = useState('')
-    const { setUser, loading, setLoading, signInUser, googleSignInUser, resetPassword } = useContext(AuthContext);
+    const { setUser, loading, setLoading, signInUser, googleSignInUser } = useContext(AuthContext);
+    const location = useLocation()
+    const navigate = useNavigate();
+    const from = location.state?.form?.pathname || '/'
 
     const handleSubmit = event => {
         event.preventDefault()
         const form = event.target;
         const email = form.email.value;
         const password = form.password.value;
+
+        setError('')
+
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[A-Za-z\d\W]{6}$/;
+
+        if (password < 6) {
+            setError('Password must be at least 6 characters')
+            return;
+        } else if (!regex.test(password)) {
+            setError('Password must contain at least 1 uppercase, 1 lowercase, 1 number and 1 symbol')
+            return;
+        }
 
         signInUser(email, password)
             .then(result => {
@@ -22,6 +37,7 @@ const Login = () => {
                     icon: 'success',
                     text: 'Login Successfully',
                 })
+                navigate(from, { replace: true });
                 setLoading(false)
             })
             .catch(error => {
@@ -33,6 +49,7 @@ const Login = () => {
                     setError('wrong password. Please try again')
                     setLoading(false)
                 }
+                setLoading(false)
                 // console.log(errorMessage)
             })
     }
@@ -46,13 +63,18 @@ const Login = () => {
                     .then(result => {
                         console.log(result.data);
                         setUser(user)
+                        Swal.fire({
+                            icon: 'success',
+                            text: 'Login Successfully',
+                        })
                         setLoading(false)
+                        navigate(from, { replace: true });
                     })
-                    console.log(user);
+                // console.log(user);
             })
             .catch(error => {
                 const errorMessage = error.message;
-                if(errorMessage == 'Firebase: Error (auth/popup-closed-by-user).'){
+                if (errorMessage == 'Firebase: Error (auth/popup-closed-by-user).') {
                     setLoading(false)
                 }
                 console.log(errorMessage)

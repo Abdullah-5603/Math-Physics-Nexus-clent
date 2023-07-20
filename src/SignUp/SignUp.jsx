@@ -8,7 +8,7 @@ import axios from 'axios'
 
 const SignUp = () => {
     const [error, setError] = useState('')
-    const {setUser, loading, setLoading, createUser, googleSignInUser } = useContext(AuthContext);
+    const { setUser, loading, setLoading, createUser, googleSignInUser } = useContext(AuthContext);
 
     const handleSubmit = event => {
         event.preventDefault();
@@ -18,6 +18,9 @@ const SignUp = () => {
         const password = form.password.value;
         const confirmPassword = form.confirmPassword.value;
 
+        setError('')
+
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[A-Za-z\d\W]{6}$/;
 
         if (password !== confirmPassword) {
             alert('Passwords did not match');
@@ -25,6 +28,10 @@ const SignUp = () => {
         } else if (password < 6) {
             setError('Password must be at least 6 characters')
             return;
+        } else if (regex.test(password)) {
+            setError('Password must contain at least 1 uppercase, 1 lowercase, 1 number and 1 symbol')
+            console.log(password);
+            return
         }
 
         const userData = { username, email, password, role: 'student' }
@@ -36,6 +43,10 @@ const SignUp = () => {
                     .then(result => {
                         console.log(result.data);
                         setUser(user)
+                        Swal.fire({
+                            icon: 'success',
+                            text: 'Sign Up Successfully',
+                        })
                         setLoading(false)
                     })
             })
@@ -47,6 +58,7 @@ const SignUp = () => {
                         text: 'This email is already in use. Please Login',
                     })
                     setError('This email is already in use. Please Login')
+                    setLoading(false)
                 } else if (errorMessage === 'Firebase: Error (auth/invalid-email).') {
                     Swal.fire({
                         icon: 'error',
@@ -54,9 +66,8 @@ const SignUp = () => {
                     })
                     setError('Please input a valid email address');
                     setLoading(false)
-                console.log(errorMessage)
+                }
                 setLoading(false)
-            }
             })
     }
 
@@ -69,13 +80,17 @@ const SignUp = () => {
                     .then(result => {
                         console.log(result.data);
                         setUser(user)
+                        Swal.fire({
+                            icon: 'success',
+                            text: 'Login Successfully',
+                        })
                         setLoading(false)
                     })
-                    console.log(result);
+                console.log(result);
             })
             .catch(error => {
                 const errorMessage = error.message;
-                if(errorMessage == 'Firebase: Error (auth/popup-closed-by-user).'){
+                if (errorMessage == 'Firebase: Error (auth/popup-closed-by-user).') {
                     setLoading(false)
                 }
                 console.log(errorMessage)

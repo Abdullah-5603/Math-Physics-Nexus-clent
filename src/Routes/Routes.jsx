@@ -6,6 +6,7 @@ import UploadPapers from "../Pages/UploadPapers/UploadPapers";
 import Login from "../Pages/Login/login";
 import SignUp from "../SignUp/SignUp";
 import ResetPassword from "../Pages/ResetPassword/ResetPassword";
+import AdminRoute from "./AdminRoute";
 
 const router = createBrowserRouter([
     {
@@ -22,7 +23,7 @@ const router = createBrowserRouter([
             },
             {
                 path : '/upload-papers',
-                element : <UploadPapers/>
+                element : <AdminRoute><UploadPapers/></AdminRoute>
             },
             {
                 path : '/log-in',
