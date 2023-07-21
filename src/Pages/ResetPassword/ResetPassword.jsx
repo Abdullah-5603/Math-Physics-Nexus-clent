@@ -2,10 +2,14 @@ import React, { useContext, useState } from 'react';
 import Loader from '../Shared/Loader';
 import { AuthContext } from '../../Providers/AuthProviders';
 import Swal from 'sweetalert2';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const ResetPassword = () => {
     const [error, setError] = useState('')
-    const {loading, resetPassword } = useContext(AuthContext);
+    const {loading, resetPassword, setLoading } = useContext(AuthContext);
+    const location = useLocation()
+    const navigate = useNavigate();
+    const from = location.state?.form?.pathname || '/'
 
     const handleSubmit = event => {
         event.preventDefault();
@@ -17,6 +21,8 @@ const ResetPassword = () => {
                 icon: 'success',
                 text: 'Password reset email sent. Please check your inbox',
             })
+            setLoading(false)
+            navigate(from, { replace: true });
             console.log('Password reset email sent');
           })
           .catch((error) => {

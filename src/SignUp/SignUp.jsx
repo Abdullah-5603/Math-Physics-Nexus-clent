@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc'
 import { AuthContext } from '../Providers/AuthProviders';
 import Loader from '../Pages/Shared/Loader';
@@ -9,6 +9,7 @@ import axios from 'axios'
 const SignUp = () => {
     const [error, setError] = useState('')
     const { setUser, loading, setLoading, createUser, googleSignInUser } = useContext(AuthContext);
+    const navigate = useNavigate()
 
     const handleSubmit = event => {
         event.preventDefault();
@@ -48,6 +49,7 @@ const SignUp = () => {
                             text: 'Sign Up Successfully',
                         })
                         setLoading(false)
+                        navigate('/')
                     })
             })
             .catch(error => {
@@ -85,6 +87,7 @@ const SignUp = () => {
                             text: 'Login Successfully',
                         })
                         setLoading(false)
+                        navigate('/')
                     })
                 console.log(result);
             })

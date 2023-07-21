@@ -25,7 +25,7 @@ const Login = () => {
         if (password < 6) {
             setError('Password must be at least 6 characters')
             return;
-        } else if (!regex.test(password)) {
+        } else if (regex.test(password)) {
             setError('Password must contain at least 1 uppercase, 1 lowercase, 1 number and 1 symbol')
             return;
         }
@@ -39,6 +39,7 @@ const Login = () => {
                 })
                 navigate(from, { replace: true });
                 setLoading(false)
+                form.reset()
             })
             .catch(error => {
                 const errorMessage = error.message
